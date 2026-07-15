@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Replit Server Panel</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #1e1e2e; color: #cdd6f4; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card { background: #313244; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-right: 10px; }
+        .btn-start { background: #a6e3a1; color: #11111b; }
+        .btn-stop { background: #f38ba8; color: #11111b; }
+        #console { background: #11111b; color: #a6e3a1; padding: 15px; border-radius: 5px; height: 300px; overflow-y: scroll; font-family: monospace; white-space: pre-wrap; }
+        .status { font-weight: bold; }
+        .Online { color: #a6e3a1; }
+        .Offline { color: #f38ba8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Replit Server Manager</h2>
+        <div class="card">
+            <p>Status Server: <span id="status" class="status Offline">Offline</span></p>
+            <button class="btn btn-start" onclick="startServer()">START</button>
+            <button class="btn btn-stop" onclick="stopServer()">STOP</button>
+        </div>
+        <div class="card">
+            <h3>Console Log</h3>
+            <div id="console">Koneksi ke panel...</div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const consoleDiv = document.getElementById('console');
+        const statusSpan = document.getElementById('status');
+
+        socket.on('status', (status) => {
+            statusSpan.innerText = status;
+            statusSpan.className = `status ${status}`;
+        });
+
+        socket.on('console', (data) => {
+            consoleDiv.innerText += data;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        });
+
+        function startServer() { socket.emit('start-server'); }
+        function stopServer() { socket.emit('stop-server'); }
+    </script>
+</body>
+</html>
